@@ -23,6 +23,14 @@ plan-prod:
 	@echo "Planning for prod workspace..."
 	cd .cloud/terraform && terraform plan -var-file="workspaces/prod.tfvars"
 
+destroy-dev:
+	@echo "Destroying dev workspace..."
+	cd .cloud/terraform && terraform destroy -var-file="workspaces/dev.tfvars" -auto-approve
+
+destroy-prod:
+	@echo "Destroying prod workspace..."
+	cd .cloud/terraform && terraform destroy -var-file="workspaces/prod.tfvars" 
+
 # Initialize Terraform
 init:
 	@echo "Initializing Terraform..."
@@ -33,4 +41,14 @@ clean:
 	@echo "Cleaning build artifacts..."
 	powershell -Command "if (Test-Path '.cloud/terraform/hello_world.zip') { Remove-Item '.cloud/terraform/hello_world.zip' }"
 
-.PHONY: build deploy-dev deploy-prod plan-dev plan-prod init clean
+# Commit and push with message
+push:
+	@msg=$(word 2,$(MAKECMDGOALS)); \
+	git add .; \
+	git commit -m "$$msg"; \
+	git push origin main
+
+%:
+	@:
+
+.PHONY: build deploy-dev deploy-prod plan-dev plan-prod init clean push
