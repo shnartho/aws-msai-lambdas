@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+terraform.tfvars
+
+# Local env
+.env
+.env.*
+
+# Lambda package
+*.zip
+
+# VSCode
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
