@@ -1,7 +1,7 @@
 # Build the Lambda function package
 build:
 	@echo "Building Lambda function package..."
-	powershell -Command "cd lambdas/hello_world; Compress-Archive -Path * -DestinationPath '../../.cloud/terraform/hello_world.zip' -Force"
+	powershell -Command "cd lambdas/hello_world; Compress-Archive -Path * -DestinationPath '../../.cloud/terraform/releases/hello_world.zip' -Force"
 
 # Deploy to dev workspace
 deploy-dev: build
@@ -43,7 +43,7 @@ clean:
 
 # Commit and push with message
 push:
-	@msg=$(word 2,$(MAKECMDGOALS)); \
+	@msg="$(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))"; \
 	git add .; \
 	git commit -m "$$msg"; \
 	git push origin main

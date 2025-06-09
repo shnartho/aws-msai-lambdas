@@ -1,7 +1,7 @@
 module "lambda" {
   source        = "./lambda"
   function_name = "${var.function_base_name}_${var.workspace}"
-  filename      = "hello_world.zip"
+  filename      = "releases/hello_world.zip"
   handler       = "main.lambda_handler"
   runtime       = "python3.11"
   role_arn      = aws_iam_role.lambda_execution_role.arn
