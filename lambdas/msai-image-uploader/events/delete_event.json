@@ -1,0 +1,18 @@
+{
+  "httpMethod": "DELETE",
+  "headers": {
+    "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0LXVzZXItaWQiLCJpYXQiOjE2MzQ1Njc4OTAsImV4cCI6OTk5OTk5OTk5OX0.test-signature"
+  },
+  "body": null,
+  "queryStringParameters": {
+    "image_name": "test-image.png"
+  },
+  "pathParameters": null,
+  "requestContext": {
+    "httpMethod": "DELETE",
+    "requestId": "test-request-id",
+    "path": "/upload",
+    "stage": "test"
+  },
+  "isBase64Encoded": false
+}

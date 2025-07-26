@@ -1,0 +1,17 @@
+{
+  "httpMethod": "POST",
+  "headers": {
+    "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0LXVzZXItaWQiLCJpYXQiOjE2MzQ1Njc4OTAsImV4cCI6OTk5OTk5OTk5OX0.test-signature",
+    "Content-Type": "application/json"
+  },
+  "body": "{\"image\": \"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==\", \"filename\": \"test.png\"}",
+  "queryStringParameters": null,
+  "pathParameters": null,
+  "requestContext": {
+    "httpMethod": "POST",
+    "requestId": "test-request-id",
+    "path": "/upload",
+    "stage": "test"
+  },
+  "isBase64Encoded": false
+}

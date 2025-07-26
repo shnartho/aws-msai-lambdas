@@ -1,7 +1,7 @@
 # Build the Lambda function package
 build:
 	@echo "Building Lambda function package..."
-	powershell -Command "cd lambdas/hello_world; Compress-Archive -Path * -DestinationPath '../../.cloud/terraform/releases/hello_world.zip' -Force"
+	powershell -Command "cd lambdas/msai-image-uploader; Compress-Archive -Path * -DestinationPath '../../.cloud/terraform/releases/msai-image-uploader.zip' -Force"
 
 # Deploy to dev workspace
 deploy-dev: build

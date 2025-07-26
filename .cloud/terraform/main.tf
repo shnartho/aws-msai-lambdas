@@ -1,7 +1,7 @@
 module "lambda" {
   source        = "./lambda"
   function_name = "${var.function_base_name}_${var.workspace}"
-  filename      = "releases/hello_world.zip"
+  filename      = "releases/msai-image-uploader.zip"
   handler       = "main.lambda_handler"
   runtime       = "python3.11"
   role_arn      = aws_iam_role.lambda_execution_role.arn
@@ -37,4 +37,14 @@ module "api_gateway" {
   workspace           = var.workspace
   lambda_function_name = module.lambda.function_name
   lambda_invoke_arn   = module.lambda.invoke_arn
+}
+
+# S3 bucket module for image uploads
+module "s3" {
+  source = "./s3"
+  
+  bucket_name   = "msai-images-bucket"
+  environment   = var.workspace
+  cors_origins  = var.cors_origins
+  aws_region    = var.aws_region
 }
