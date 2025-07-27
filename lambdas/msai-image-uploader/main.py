@@ -1,14 +1,15 @@
+import base64
 import json
 import os
 import logging
 from application.jwt_service import JWTService
 from application.image_service import ImageService
 from repository.s3_repository import S3Repository
-from domain.models import ImageUploadRequest, ImageDeleteRequest
+from domain.models import ImageData, ImagePostRequest, ImagePostResponse, ImageUploadRequest, ImageDeleteRequest
 from config import Config
 
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.ERROR)
 
 def lambda_handler(event, context):
     """
@@ -49,12 +50,15 @@ def lambda_handler(event, context):
             return _create_response(401, {"error": "Invalid or expired token"})
         logger.info(f"Authenticated user: {user.id}")
 
-        if http_method == 'POST':
+        if http_method == 'PUT':
             logger.info("Processing image upload")
             return _handle_upload(event, user, image_service)
         elif http_method == 'DELETE':
             logger.info("Processing image deletion")
             return _handle_delete(event, user, image_service)
+        elif http_method == 'POST':
+            logger.info("Processing image fetch (POST)")
+            return _handle_post(user, image_service)
         else:
             logger.warning(f"Method not allowed: {http_method}")
             return _create_response(405, {"error": f"Method {http_method} not allowed"})
@@ -141,6 +145,28 @@ def _handle_delete(event, user, image_service):
     except Exception as e:
         logger.error(f"Delete error: {str(e)}", exc_info=True)
         return _create_response(500, {"error": "Failed to delete image"})
+
+def _handle_post(user, image_service):
+    """Handle image fetch"""
+    logger.info("Starting image fetch process")
+    try:
+        request = ImagePostRequest(user_id=user.id)
+        images = image_service.get_all_images(request)
+
+        response = ImagePostResponse(images=[
+            ImageData(name=img.name, presigned_url=img.presigned_url) for img in images
+        ])
+
+        return _create_response(200, {
+            "images": [
+                {"name": img.name, "presigned_url": img.presigned_url}
+                for img in response.images
+            ]
+        })
+    
+    except Exception as e:
+        logger.error(f"Post fetch error: {str(e)}", exc_info=True)
+        return _create_response(500, {"error": "Failed to fetch images"})
 
 
 def _create_response(status_code, body):

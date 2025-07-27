@@ -39,8 +39,15 @@ resource "aws_iam_policy" "lambda_s3_policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        Effect    = "Allow"
-        Action    = [
+        Effect = "Allow"
+        Action = [
+          "s3:ListBucket"
+        ]
+        Resource = "arn:aws:s3:::msai-images-bucket"
+      },
+      {
+        Effect = "Allow"
+        Action = [
           "s3:PutObject",
           "s3:DeleteObject",
           "s3:GetObject"
@@ -50,6 +57,7 @@ resource "aws_iam_policy" "lambda_s3_policy" {
     ]
   })
 }
+
 
 resource "aws_iam_role_policy_attachment" "attach_lambda_s3_policy" {
   policy_arn = aws_iam_policy.lambda_s3_policy.arn

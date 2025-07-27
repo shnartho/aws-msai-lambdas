@@ -97,8 +97,19 @@ resource "aws_s3_bucket_lifecycle_configuration" "msai_images_bucket_lifecycle" 
     }
 
     transition {
-      days          = 90
+      days          = 60
       storage_class = "GLACIER"
+    }
+  }
+
+  rule {
+    id     = "expire_objects_after_1_day"
+    status = "Enabled"
+
+    filter {}
+
+    expiration {
+      days = 1
     }
   }
 }

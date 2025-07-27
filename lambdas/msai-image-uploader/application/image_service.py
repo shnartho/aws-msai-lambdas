@@ -1,7 +1,6 @@
 import base64
 import json
-from typing import Tuple, Optional
-from domain.models import ImageUploadRequest, ImageUploadResponse, ImageDeleteRequest, ImageDeleteResponse
+from domain.models import ImageData, ImageUploadRequest, ImageUploadResponse, ImageDeleteRequest, ImageDeleteResponse, ImagePostRequest, ImagePostResponse
 from repository.s3_repository import S3Repository
 import logging
 
@@ -72,6 +71,35 @@ class ImageService:
                 success=False,
                 message=f"Service error: {str(e)}"
             )
+        
+    def get_all_images(self, request: ImagePostRequest) -> list[ImageData]:
+        """
+        Fetch all images for a user from S3
+        
+        Args:
+            request: ImagePostRequest
+        
+        Returns:
+            List of ImageData
+        """
+        try:
+            logger.info(f"Fetching all images for user: {request.user_id}")
+            objects = self.s3_repository.list_user_images(request.user_id)
+            logger.info(f"Found {len(objects)} images for user: {request.user_id}")
+
+            images = []
+            for obj in objects:
+                image_name = obj['Key'].split('/')[-1]
+                presigned_url = self.s3_repository.get_presigned_url(obj['Key'])
+
+                if presigned_url:
+                    images.append(ImageData(name=image_name, presigned_url=presigned_url))
+
+            return images
+
+        except Exception as e:
+            logger.error(f"get_all_images: {str(e)}", exc_info=True)
+            return []
 
     
     def parse_image_from_event(self, event: dict):

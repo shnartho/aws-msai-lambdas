@@ -12,6 +12,28 @@ class S3Repository:
     def __init__(self, bucket_name: Optional[str] = None):
         self.s3_client = boto3.client('s3')
         self.bucket_name = bucket_name or Config.S3_BUCKET_NAME
+
+    def list_user_images(self, user_id: str) -> list[dict]:
+        prefix = f"{user_id}/"
+        try:
+            response = self.s3_client.list_objects_v2(Bucket=self.bucket_name, Prefix=prefix)
+            return response.get("Contents", [])
+        except ClientError as e:
+            print(f"Failed to list images: {str(e)}")
+            return []
+        
+    def get_presigned_url(self, s3_key: str, expires_in: int = 3600) -> str | None:
+        try:
+            presigned_url = self.s3_client.generate_presigned_url(
+                'get_object',
+                Params={'Bucket': self.bucket_name, 'Key': s3_key},
+                ExpiresIn=expires_in
+            )
+            return presigned_url
+        except ClientError as e:
+            print(f"Failed to generate presigned URL for {s3_key}: {str(e)}")
+            return None
+            
     
     def upload_image(self, user_id: str, image_data: bytes, file_extension: str) -> tuple[bool, str, str]:
         """

@@ -1,13 +1,35 @@
 from dataclasses import dataclass
 from typing import Optional
 
+@dataclass
+class ImagePostRequest:
+    """Image post request model"""
+    user_id: str
 
 @dataclass
-class User:
-    """User model extracted from JWT token"""
-    id: str
-    username: Optional[str] = None
-    email: Optional[str] = None
+class ImageUploadRequest:
+    """Image upload request model"""
+    user_id: str
+    image_data: bytes
+    content_type: str
+    file_extension: str
+
+
+@dataclass
+class ImageDeleteRequest:
+    """Image delete request model"""
+    user_id: str
+    image_name: str
+
+@dataclass
+class ImageData:
+    name: str
+    presigned_url: bytes
+
+@dataclass
+class ImagePostResponse:
+    """Image post response model"""
+    images: list[ImageData]
 
 @dataclass
 class ImageUploadResponse:
@@ -30,18 +52,9 @@ class ErrorResponse:
     error: str
     detail: Optional[str] = None
 
-
 @dataclass
-class ImageUploadRequest:
-    """Image upload request model"""
-    user_id: str
-    image_data: bytes
-    content_type: str
-    file_extension: str
-
-
-@dataclass
-class ImageDeleteRequest:
-    """Image delete request model"""
-    user_id: str
-    image_name: str
+class User:
+    """User model extracted from JWT token"""
+    id: str
+    username: Optional[str] = None
+    email: Optional[str] = None
