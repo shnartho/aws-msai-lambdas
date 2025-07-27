@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from typing import Optional
-from pydantic import BaseModel
 
 
 @dataclass
@@ -10,23 +9,23 @@ class User:
     username: Optional[str] = None
     email: Optional[str] = None
 
-
-class ImageUploadResponse(BaseModel):
+@dataclass
+class ImageUploadResponse:
     """Image upload response model"""
     success: bool
     image_url: str
     message: str
     user_id: str
 
-
-class ImageDeleteResponse(BaseModel):
+@dataclass
+class ImageDeleteResponse:
     """Image delete response model"""
     success: bool
     message: str
     user_id: str
 
-
-class ErrorResponse(BaseModel):
+@dataclass
+class ErrorResponse:
     """Error response model"""
     error: str
     detail: Optional[str] = None
