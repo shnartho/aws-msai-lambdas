@@ -1,7 +1,15 @@
 # Build the Lambda function package
 build:
+build:
 	@echo "Building Lambda function package..."
-	powershell -Command "cd lambdas/msai-image-uploader; Compress-Archive -Path * -DestinationPath '../../.cloud/terraform/releases/msai-image-uploader.zip' -Force"
+	powershell -Command "cd lambdas/msai-image-uploader; if (Test-Path 'dist') { Remove-Item -Recurse -Force 'dist' }; New-Item -ItemType Directory -Name 'dist'"
+	powershell -Command "cd lambdas/msai-image-uploader; pip install -r requirements.txt -t dist/ --upgrade --platform linux_x86_64 --only-binary=:all:"
+	powershell -Command "cd lambdas/msai-image-uploader; Copy-Item -Path main.py, config.py -Destination dist/"
+	powershell -Command "cd lambdas/msai-image-uploader; Copy-Item -Path application -Destination dist/ -Recurse -Force"
+	powershell -Command "cd lambdas/msai-image-uploader; Copy-Item -Path domain -Destination dist/ -Recurse -Force"
+	powershell -Command "cd lambdas/msai-image-uploader; Copy-Item -Path repository -Destination dist/ -Recurse -Force"
+	cd lambdas/msai-image-uploader/dist && zip -r ../../../.cloud/terraform/releases/msai-image-uploader.zip .
+
 
 # Deploy to dev workspace
 deploy-dev: build
@@ -39,7 +47,7 @@ init:
 # Clean build artifacts
 clean:
 	@echo "Cleaning build artifacts..."
-	powershell -Command "if (Test-Path '.cloud/terraform/hello_world.zip') { Remove-Item '.cloud/terraform/hello_world.zip' }"
+	powershell -Command "if (Test-Path '.cloud/terraform/release/msai-image-uploader.zip') { Remove-Item '.cloud/terraform/release/msai-image-uploader.zip' }"
 
 # Commit and push with message
 push:
