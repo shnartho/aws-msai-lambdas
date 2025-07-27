@@ -78,6 +78,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "msai_images_bucket_lifecycle" 
     id     = "delete_old_versions"
     status = "Enabled"
 
+    filter {}
+
     noncurrent_version_expiration {
       noncurrent_days = 30
     }
@@ -86,6 +88,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "msai_images_bucket_lifecycle" 
   rule {
     id     = "transition_to_ia"
     status = "Enabled"
+
+    filter {}
 
     transition {
       days          = 30

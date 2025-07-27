@@ -1,6 +1,6 @@
 output "api_gateway_url" {
   description = "URL of the API Gateway endpoint"
-  value       = "https://${aws_api_gateway_rest_api.lambda_api.id}.execute-api.${data.aws_region.current.name}.amazonaws.com/${aws_api_gateway_stage.lambda_stage.stage_name}/hello"
+  value       = "https://${aws_api_gateway_rest_api.lambda_api.id}.execute-api.${data.aws_region.current.name}.amazonaws.com/${aws_api_gateway_stage.lambda_stage.stage_name}/images"
 }
 
 output "api_gateway_id" {

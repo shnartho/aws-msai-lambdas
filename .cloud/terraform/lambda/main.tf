@@ -4,4 +4,5 @@ resource "aws_lambda_function" "lambda" {
   handler       = var.handler
   runtime       = var.runtime
   role          = var.role_arn
+  timeout       = var.timeout
 }

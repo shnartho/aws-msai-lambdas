@@ -22,3 +22,9 @@ variable "role_arn" {
   description = "IAM role ARN for the Lambda function"
   type        = string
 }
+
+variable "timeout" {
+  description = "The amount of time your Lambda Function has to run in seconds"
+  type        = number
+  default     = 15  # Default to 3 seconds if not specified
+}
