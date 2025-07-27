@@ -7,7 +7,6 @@ from repository.s3_repository import S3Repository
 from domain.models import ImageUploadRequest, ImageDeleteRequest
 from config import Config
 
-# Set up logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
@@ -19,7 +18,6 @@ def lambda_handler(event, context):
     logger.debug(f"Full event: {json.dumps(event)}")
     
     try:
-        # Initialize services with logging
         logger.info("Initializing services")
         jwt_service = JWTService()
         s3_repository = S3Repository()
@@ -33,8 +31,7 @@ def lambda_handler(event, context):
             logger.info("Handling health check request")
             return _create_response(200, {
                 "status": "OK",
-                "message": "Service is operational",
-                "data": "hello"
+                "message": "Service is operational"
             })
         
         headers = event.get('headers', {})
@@ -46,6 +43,7 @@ def lambda_handler(event, context):
         
         logger.info("Decoding JWT token")
         user = jwt_service.decode_token(auth_header)
+        logger.debug(f"Decoded user from token: {user}")
         if not user:
             logger.warning("Invalid or expired token")
             return _create_response(401, {"error": "Invalid or expired token"})
@@ -97,7 +95,7 @@ def _handle_upload(event, user, image_service):
             return _create_response(200, {
                 "message": response.message,
                 "image_url": response.image_url,
-                "user_id": user.id
+                "user_id": user.id if user else None
             })
         else:
             logger.error(f"Upload failed: {response.message}")

@@ -3,7 +3,10 @@ import json
 from typing import Tuple, Optional
 from domain.models import ImageUploadRequest, ImageUploadResponse, ImageDeleteRequest, ImageDeleteResponse
 from repository.s3_repository import S3Repository
+import logging
 
+logger = logging.getLogger()
+logger.setLevel(logging.WARNING)
 
 class ImageService:
     """Service for handling image operations"""
@@ -31,14 +34,16 @@ class ImageService:
             return ImageUploadResponse(
                 success=success,
                 image_url=image_url,
-                message=message
+                message=message,
+                user_id=request.user_id
             )
             
         except Exception as e:
             return ImageUploadResponse(
                 success=False,
                 image_url="",
-                message=f"Service error: {str(e)}"
+                message=f"Service error: {str(e)}",
+                user_id=request.user_id
             )
     
     def delete_image(self, request: ImageDeleteRequest) -> ImageDeleteResponse:
@@ -69,49 +74,56 @@ class ImageService:
             )
 
     
-    def parse_image_from_event(self, event: dict) -> Tuple[Optional[bytes], Optional[str]]:
-        """
-        Parse image data from Lambda event
-        
-        Args:
-            event: Lambda event dictionary
-            
-        Returns:
-            Tuple of (image_data, file_extension) or (None, None) if parsing fails
-        """
+    def parse_image_from_event(self, event: dict):
+        logger.info("parse_image_from_event: called")
+
         try:
             if 'body' not in event:
-                print("No body in event")
+                logger.warning("parse_image_from_event: 'body' not in event")
                 return None, None
-            
+
             body = event['body']
-            
+            logger.info(f"parse_image_from_event: body type before decode = {type(body)}")
+            logger.info(f"parse_image_from_event: isBase64Encoded = {event.get('isBase64Encoded')}")
+
             if event.get('isBase64Encoded', False):
-                body = base64.b64decode(body).decode('utf-8')
-            
-            try:
-                json_body = json.loads(body) if isinstance(body, str) else body
-                
-                if 'image' in json_body and 'filename' in json_body:
-                    image_data = base64.b64decode(json_body['image'])
-                    filename = json_body['filename']
-                    file_extension = filename.split('.')[-1].lower() if '.' in filename else 'jpg'
-                    return image_data, file_extension
-                    
-            except (json.JSONDecodeError, TypeError):
-                pass
-            
+                try:
+                    body = base64.b64decode(body)
+                    logger.info("parse_image_from_event: base64 body decoded successfully")
+                except Exception as e:
+                    logger.error(f"Failed to base64 decode body: {str(e)}")
+                    return None, None
+
+            if isinstance(body, (bytes, bytearray)):
+                logger.info("parse_image_from_event: body is bytes")
+                return body, 'jpg'
+
             if isinstance(body, str):
+                logger.info("parse_image_from_event: body is str, trying json.loads")
+                try:
+                    json_body = json.loads(body)
+                    logger.info("parse_image_from_event: JSON loaded successfully")
+                    if 'image' in json_body and 'filename' in json_body:
+                        image_data = base64.b64decode(json_body['image'])
+                        filename = json_body['filename']
+                        file_extension = filename.split('.')[-1].lower() if '.' in filename else 'jpg'
+                        logger.info(f"parse_image_from_event: decoded image from JSON, extension = {file_extension}")
+                        return image_data, file_extension
+                except Exception as e:
+                    logger.warning(f"parse_image_from_event: failed json.loads: {str(e)}")
+
+                logger.info("parse_image_from_event: fallback base64 decode for raw string")
                 try:
                     image_data = base64.b64decode(body)
-                    file_extension = 'jpg'
-                    return image_data, file_extension
-                except Exception:
-                    print("Failed to decode body as base64")
+                    logger.info("parse_image_from_event: fallback base64 decode succeeded")
+                    return image_data, 'jpg'
+                except Exception as e:
+                    logger.warning(f"parse_image_from_event: fallback base64 decode failed: {str(e)}")
                     return None, None
-            else:
-                return body, 'jpg'
-                
+
+            logger.warning("parse_image_from_event: unsupported body type")
+            return None, None
+
         except Exception as e:
-            print(f"Error parsing image from event: {str(e)}")
+            logger.error(f"parse_image_from_event: fatal error: {str(e)}")
             return None, None

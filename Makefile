@@ -12,7 +12,7 @@ build:
 
 
 # Deploy to dev workspace
-deploy-dev: build
+deploy-dev: 
 	@echo "Deploying to dev workspace..."
 	cd .cloud/terraform && terraform apply -var-file="workspaces/dev.tfvars" -auto-approve
 
