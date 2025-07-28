@@ -1,6 +1,5 @@
 # Build the Lambda function package
 build:
-build:
 	@echo "Building Lambda function package..."
 	powershell -Command "cd lambdas/msai-image-uploader; if (Test-Path 'dist') { Remove-Item -Recurse -Force 'dist' }; New-Item -ItemType Directory -Name 'dist'"
 	powershell -Command "cd lambdas/msai-image-uploader; pip install -r requirements.txt -t dist/ --upgrade --platform linux_x86_64 --only-binary=:all:"
@@ -9,7 +8,6 @@ build:
 	powershell -Command "cd lambdas/msai-image-uploader; Copy-Item -Path domain -Destination dist/ -Recurse -Force"
 	powershell -Command "cd lambdas/msai-image-uploader; Copy-Item -Path repository -Destination dist/ -Recurse -Force"
 	cd lambdas/msai-image-uploader/dist && zip -r ../../../.cloud/terraform/releases/msai-image-uploader.zip .
-
 
 # Deploy to dev workspace
 deploy-dev: 

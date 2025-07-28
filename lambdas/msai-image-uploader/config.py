@@ -9,6 +9,7 @@ class Config:
     ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'tiff']
     MAX_FILE_SIZE = int(os.environ.get('MAX_FILE_SIZE', 10 * 1024 * 1024))
     CORS_ORIGINS = os.environ.get('CORS_ORIGINS', '*')
+    ALLOWED_REGIONS = os.environ.get('ALLOWED_REGIONS', 'PT,US')
     
     @classmethod
     def get_content_type(cls, file_extension: str) -> str:

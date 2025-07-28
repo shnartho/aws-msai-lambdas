@@ -63,18 +63,20 @@ class ImageService:
 
             return ImageDeleteResponse(
                 success=success,
-                message=message
+                message=message,
+                user_id=request.user_id
             )
             
         except Exception as e:
             return ImageDeleteResponse(
                 success=False,
-                message=f"Service error: {str(e)}"
+                message=f"Service error: {str(e)}",
+                user_id=request.user_id
             )
         
-    def get_all_images(self, request: ImagePostRequest) -> list[ImageData]:
+    def get_all_user_images(self, request: ImagePostRequest) -> list[ImageData]:
         """
-        Fetch all images for a user from S3
+        Fetch all user images for a user from S3
         
         Args:
             request: ImagePostRequest
@@ -98,9 +100,31 @@ class ImageService:
             return images
 
         except Exception as e:
+            logger.error(f"get_all_user_images: {str(e)}", exc_info=True)
+            return []
+        
+    def get_all_images(self) -> list[ImageData]:
+        try:
+            logger.info("Fetching all images from S3")
+            objects = self.s3_repository.list_all_images()
+            logger.info(f"Found {len(objects)} images in total")
+
+            images = []
+            for obj in objects:
+                if obj.get('Size', 0) == 0:
+                    continue # Skip empty objects 
+                image_name = obj['Key'].split('/')[-1]
+                presigned_url = self.s3_repository.get_presigned_url(obj['Key'])
+
+                if presigned_url:
+                    images.append(ImageData(name=image_name, presigned_url=presigned_url))
+
+            return images
+
+        except Exception as e:
             logger.error(f"get_all_images: {str(e)}", exc_info=True)
             return []
-
+        
     
     def parse_image_from_event(self, event: dict):
         logger.info("parse_image_from_event: called")
