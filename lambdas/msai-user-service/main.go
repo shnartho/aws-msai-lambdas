@@ -16,9 +16,16 @@ func main() {
 	app := fx.New(
 		fx.Provide(
 			repository.NewUserRepository,
+			repository.NewAdsRepository,
 			service.NewAuthService,
-			func(authService *service.AuthService) *handler.Handler {
-				return &handler.Handler{AuthService: authService}
+			service.NewUserService,
+			service.NewAdsService,
+			func(authService *service.AuthService, userService *service.UserService, adsService *service.AdsService) *handler.Handler {
+				return &handler.Handler{
+					AuthService: authService,
+					UserService: userService,
+					AdsService:  adsService,
+				}
 			},
 		),
 		fx.Populate(&Handler),

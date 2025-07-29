@@ -3,13 +3,18 @@ package repository
 import (
 	"context"
 	"errors"
-	"msai-user-service/model"
 	"fmt"
+	"msai-user-service/model"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+)
+
+const (
+	userTable = "msai.user"
 )
 
 type UserRepository struct {
@@ -23,7 +28,7 @@ func NewUserRepository() (*UserRepository, error) {
 		return nil, err
 	}
 	db := dynamodb.NewFromConfig(cfg)
-	return &UserRepository{db: db, table: "msai.user"}, nil
+	return &UserRepository{db: db, table: userTable}, nil
 }
 
 func (r *UserRepository) GetLoginUserByEmail(email string) (model.LoginUser, error) {
@@ -95,4 +100,15 @@ func (r *UserRepository) GetUserByID(ctx context.Context, userID string) (*model
 		return nil, err
 	}
 	return &user, nil
+}
+
+func (r *UserRepository) DeleteUserByID(ctx context.Context, userID string) error {
+	input := &dynamodb.DeleteItemInput{
+		TableName: &r.table,
+		Key: map[string]types.AttributeValue{
+			"id": &types.AttributeValueMemberS{Value: userID},
+		},
+	}
+	_, err := r.db.DeleteItem(ctx, input)
+	return err
 }

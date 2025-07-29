@@ -44,7 +44,8 @@ resource "aws_iam_policy" "dynamodb_user_access" {
           "dynamodb:PutItem",
           "dynamodb:GetItem",
           "dynamodb:UpdateItem",
-          "dynamodb:Query"
+          "dynamodb:Query",
+          "dynamodb:DeleteItem"
         ]
         Resource = [
           "${var.dynamodb_user_table_arn}",
@@ -57,5 +58,35 @@ resource "aws_iam_policy" "dynamodb_user_access" {
 
 resource "aws_iam_role_policy_attachment" "lambda_dynamodb_user_access" {
   policy_arn = aws_iam_policy.dynamodb_user_access.arn
+  role       = aws_iam_role.lambda_execution_role.name
+}
+
+# Allow Lambda to access DynamoDB table msai.ads
+resource "aws_iam_policy" "dynamodb_ads_access" {
+  name        = "lambda_user_dynamodb_ads_access_${var.workspace}"
+  description = "Allow Lambda to access msai.ads DynamoDB table"
+  policy      = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:PutItem",
+          "dynamodb:GetItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:Query",
+          "dynamodb:DeleteItem"
+        ]
+        Resource = [
+          "${var.dynamodb_ads_table_arn}",
+          "${var.dynamodb_ads_table_arn}/index/*"
+        ]
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_dynamodb_ads_access" {
+  policy_arn = aws_iam_policy.dynamodb_ads_access.arn
   role       = aws_iam_role.lambda_execution_role.name
 }

@@ -33,3 +33,8 @@ variable "dynamodb_user_table_arn" {
   description = "ARN of the msai.user DynamoDB table"
   type        = string
 }
+
+variable "dynamodb_ads_table_arn" {
+  description = "ARN of the msai.ads DynamoDB table"
+  type        = string
+}

@@ -1,4 +1,6 @@
-// Image service module
+###########################
+### Image Service Module ###
+###########################
 module "lambda" {
   source        = "./lambda"
   workspace     = var.workspace
@@ -26,7 +28,9 @@ module "s3" {
   aws_region   = var.aws_region
 }
 
-// Auth Service Module
+####################################
+### User|Auth|Ads Service Module ###
+####################################
 
 module "lambda_user" {
   source        = "./lambda-user"
@@ -37,6 +41,7 @@ module "lambda_user" {
   runtime       = "provided.al2023"
   timeout       = 60
   dynamodb_user_table_arn = module.dynamodb_user.table_arn
+  dynamodb_ads_table_arn  = module.dynamodb_ads.table_arn
 }
 
 
@@ -50,4 +55,8 @@ module "api_gateway_user" {
 
 module "dynamodb_user" {
   source = "./dynamodb-user"
+}
+
+module "dynamodb_ads" {
+  source = "./dynamodb-ads"
 }
