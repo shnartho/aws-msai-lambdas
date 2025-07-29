@@ -1,0 +1,90 @@
+{
+    "message": "Received event",
+    "event": {
+        "resource": "/auth/login",
+        "path": "/auth/login",
+        "httpMethod": "POST",
+        "headers": {
+            "Accept": "*/*",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Cache-Control": "no-cache",
+            "Host": "xj4uyytlz8.execute-api.us-east-1.amazonaws.com",
+            "Postman-Token": "507ebfd6-eed7-457b-ac1a-d4d580b51bd3",
+            "User-Agent": "PostmanRuntime/7.44.1",
+            "X-Amzn-Trace-Id": "Root=1-68889c8f-53a654a71587574f6fdcb32e",
+            "X-Forwarded-For": "95.94.131.111",
+            "X-Forwarded-Port": "443",
+            "X-Forwarded-Proto": "https"
+        },
+        "multiValueHeaders": {
+            "Accept": [
+                "*/*"
+            ],
+            "Accept-Encoding": [
+                "gzip, deflate, br"
+            ],
+            "Cache-Control": [
+                "no-cache"
+            ],
+            "Host": [
+                "xj4uyytlz8.execute-api.us-east-1.amazonaws.com"
+            ],
+            "Postman-Token": [
+                "507ebfd6-eed7-457b-ac1a-d4d580b51bd3"
+            ],
+            "User-Agent": [
+                "PostmanRuntime/7.44.1"
+            ],
+            "X-Amzn-Trace-Id": [
+                "Root=1-68889c8f-53a654a71587574f6fdcb32e"
+            ],
+            "X-Forwarded-For": [
+                "95.94.131.111"
+            ],
+            "X-Forwarded-Port": [
+                "443"
+            ],
+            "X-Forwarded-Proto": [
+                "https"
+            ]
+        },
+        "queryStringParameters": null,
+        "multiValueQueryStringParameters": null,
+        "pathParameters": null,
+        "stageVariables": null,
+        "requestContext": {
+            "resourceId": "afwv9n",
+            "resourcePath": "/auth/login",
+            "httpMethod": "POST",
+            "extendedRequestId": "Od1miEkZIAMEBWg=",
+            "requestTime": "29/Jul/2025:10:03:59 +0000",
+            "path": "/dev/auth/login",
+            "accountId": "493364212123",
+            "protocol": "HTTP/1.1",
+            "stage": "dev",
+            "domainPrefix": "xj4uyytlz8",
+            "requestTimeEpoch": 1753783439858,
+            "requestId": "13ff3864-2b27-4446-b687-55ff4426d025",
+            "identity": {
+                "cognitoIdentityPoolId": null,
+                "accountId": null,
+                "cognitoIdentityId": null,
+                "caller": null,
+                "sourceIp": "95.94.131.111",
+                "principalOrgId": null,
+                "accessKey": null,
+                "cognitoAuthenticationType": null,
+                "cognitoAuthenticationProvider": null,
+                "userArn": null,
+                "userAgent": "PostmanRuntime/7.44.1",
+                "user": null
+            },
+            "domainName": "xj4uyytlz8.execute-api.us-east-1.amazonaws.com",
+            "deploymentId": "nawu9h",
+            "apiId": "xj4uyytlz8"
+        },
+        "body": null,
+        "isBase64Encoded": false
+    },
+    "request_id": "9934e2dc-2344-474e-8e2d-614011eec055"
+}

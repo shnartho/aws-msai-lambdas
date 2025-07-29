@@ -18,13 +18,18 @@ variable "runtime" {
   type        = string
 }
 
-variable "role_arn" {
-  description = "IAM role ARN for the Lambda function"
-  type        = string
-}
-
 variable "timeout" {
   description = "The amount of time your Lambda Function has to run in seconds"
   type        = number
   default     = 15  # Default to 3 seconds if not specified
+}
+
+variable "workspace" {
+  description = "The workspace/environment name"
+  type        = string
+}
+
+variable "s3_bucket_name" {
+  description = "Name of the S3 bucket for Lambda permissions"
+  type        = string
 }

@@ -27,3 +27,11 @@ output "api_gateway_base_url" {
   description = "Base URL of the API Gateway"
   value       = module.api_gateway.api_gateway_base_url
 }
+
+output "dynamodb_user_table_name" {
+  value = module.dynamodb_user.table_name
+}
+
+output "dynamodb_user_table_arn" {
+  value = module.dynamodb_user.table_arn
+}

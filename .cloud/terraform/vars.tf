@@ -6,7 +6,13 @@ variable "workspace" {
 variable "function_base_name" {
   description = "Base name for the Lambda function"
   type        = string
-  default     = "hello_world_lambda"
+  default     = "msai-image-service"
+}
+
+variable "function_name_auth_service" {
+  description = "Base name for the Lambda function"
+  type        = string
+  default     = "msai-auth-service"
 }
 
 variable "aws_region" {
@@ -19,4 +25,10 @@ variable "cors_origins" {
   description = "List of allowed CORS origins for S3 bucket"
   type        = list(string)
   default     = ["*"]
+}
+
+variable "deploy_service" {
+  description = "Which service to deploy: 'auth', 'image', or 'all'"
+  type        = string
+  default     = "all"
 }
