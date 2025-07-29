@@ -27,23 +27,25 @@ module "s3" {
 }
 
 // Auth Service Module
-module "lambda_auth" {
-  source        = "./lambda-auth"
+
+module "lambda_user" {
+  source        = "./lambda-user"
   workspace     = var.workspace
-  function_name = "${var.function_name_auth_service}_${var.workspace}"
-  filename      = "releases/msai-auth-service.zip"
+  function_name = "${var.function_name_user_service}_${var.workspace}"
+  filename      = "releases/msai-user-service.zip"
   handler       = "bootstrap"
   runtime       = "provided.al2023"
   timeout       = 60
   dynamodb_user_table_arn = module.dynamodb_user.table_arn
 }
 
-module "api_gateway_auth" {
-  source               = "./api-gateway-auth"
-  function_name        = var.function_name_auth_service
+
+module "api_gateway_user" {
+  source               = "./api-gateway-user"
+  function_name        = var.function_name_user_service
   workspace            = var.workspace
-  lambda_function_name = module.lambda_auth.function_name
-  lambda_invoke_arn    = module.lambda_auth.invoke_arn
+  lambda_function_name = module.lambda_user.function_name
+  lambda_invoke_arn    = module.lambda_user.invoke_arn
 }
 
 module "dynamodb_user" {

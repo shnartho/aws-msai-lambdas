@@ -9,10 +9,10 @@ variable "function_base_name" {
   default     = "msai-image-service"
 }
 
-variable "function_name_auth_service" {
+variable "function_name_user_service" {
   description = "Base name for the Lambda function"
   type        = string
-  default     = "msai-auth-service"
+  default     = "msai-user-service"
 }
 
 variable "aws_region" {

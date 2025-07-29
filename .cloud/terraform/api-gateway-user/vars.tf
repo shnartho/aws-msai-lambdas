@@ -1,5 +1,5 @@
 variable "function_name" {
-  description = "Name of the Lambda function (e.g., msai-auth-service)"
+  description = "Name of the Lambda function (e.g., msai-user-service)"
   type        = string
 }
 

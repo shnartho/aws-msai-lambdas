@@ -33,7 +33,7 @@ resource "aws_iam_role_policy_attachment" "lambda_basic_execution" {
 
 # Allow Lambda to access DynamoDB table msai.user
 resource "aws_iam_policy" "dynamodb_user_access" {
-  name        = "lambda_auth_dynamodb_user_access_${var.workspace}"
+  name        = "lambda_user_dynamodb_user_access_${var.workspace}"
   description = "Allow Lambda to access msai.user DynamoDB table"
   policy      = jsonencode({
     Version = "2012-10-17"

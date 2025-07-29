@@ -3,25 +3,25 @@ package main
 import (
 	"context"
 	"log"
-	"msai-auth-service/handler"
-	"msai-auth-service/repository"
-	"msai-auth-service/service"
+	"msai-user-service/handler"
+	"msai-user-service/repository"
+	"msai-user-service/service"
 
 	"github.com/aws/aws-lambda-go/lambda"
 	"go.uber.org/fx"
 )
 
 func main() {
-	var authHandler *handler.AuthHandler
+	var Handler *handler.Handler
 	app := fx.New(
 		fx.Provide(
 			repository.NewUserRepository,
 			service.NewAuthService,
-			func(authService *service.AuthService) *handler.AuthHandler {
-				return &handler.AuthHandler{AuthService: authService}
+			func(authService *service.AuthService) *handler.Handler {
+				return &handler.Handler{AuthService: authService}
 			},
 		),
-		fx.Populate(&authHandler),
+		fx.Populate(&Handler),
 	)
 	startCtx, cancel := context.WithTimeout(context.Background(), fx.DefaultTimeout)
 	defer cancel()
@@ -31,5 +31,5 @@ func main() {
 	defer app.Stop(context.Background())
 
 	// Use the handler's HandleLambda method as the Lambda entrypoint
-	lambda.Start(authHandler.HandleLambda)
+	lambda.Start(Handler.HandleLambda)
 }

@@ -2,9 +2,9 @@ package service
 
 import (
 	"errors"
-	"msai-auth-service/model"
-	"msai-auth-service/repository"
-	"msai-auth-service/util"
+	"msai-user-service/model"
+	"msai-user-service/repository"
+	"msai-user-service/util"
 )
 
 type AuthService struct {
@@ -16,14 +16,14 @@ func NewAuthService(userRepo *repository.UserRepository) *AuthService {
 }
 
 func (s *AuthService) Login(email, password string) (string, error) {
-	user, err := s.userRepo.GetUserByEmail(email)
+	loginUser, err := s.userRepo.GetLoginUserByEmail(email)
 	if err != nil {
 		return "", errors.New("invalid credentials")
 	}
-	if !util.CheckPasswordHash(password, user.Password) {
+	if !util.CheckPasswordHash(password, loginUser.Password) {
 		return "", errors.New("invalid credentials")
 	}
-	token, err := util.GenerateJWT(user.Email)
+	token, err := util.GenerateJWT(loginUser.Email, loginUser.ID)
 	if err != nil {
 		return "", err
 	}
@@ -35,6 +35,6 @@ func (s *AuthService) Signup(email, password, region string, balance float64) er
 	if err != nil {
 		return err
 	}
-	user := model.NewUser(email, hash, region, balance)
-	return s.userRepo.CreateUser(user)
+	user := model.NewSignupUser(email, hash, region, balance)
+	return s.userRepo.CreateSignupUser(user)
 }

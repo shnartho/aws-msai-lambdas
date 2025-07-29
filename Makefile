@@ -9,13 +9,13 @@ build:
 	powershell -Command "cd lambdas/msai-image-uploader; Copy-Item -Path repository -Destination dist/ -Recurse -Force"
 	cd lambdas/msai-image-uploader/dist && zip -r ../../../.cloud/terraform/releases/msai-image-uploader.zip .
 
-build-auth:
-	@echo "Building msai-auth-service Lambda function package..."
-	powershell -Command "cd lambdas/msai-auth-service; if (Test-Path 'dist') { Remove-Item -Recurse -Force 'dist' }; New-Item -ItemType Directory -Name 'dist'"
-	cd lambdas/msai-auth-service && GOOS=linux GOARCH=amd64 go build -o dist/bootstrap main.go
-	cd lambdas/msai-auth-service/dist && zip -r ../../../.cloud/terraform/releases/msai-auth-service.zip .
+build-user:
+	@echo "Building msai-user-service Lambda function package..."
+	powershell -Command "cd lambdas/msai-user-service; if (Test-Path 'dist') { Remove-Item -Recurse -Force 'dist' }; New-Item -ItemType Directory -Name 'dist'"
+	cd lambdas/msai-user-service && GOOS=linux GOARCH=amd64 go build -o dist/bootstrap main.go
+	cd lambdas/msai-user-service/dist && zip -r ../../../.cloud/terraform/releases/msai-user-service.zip .
 	@echo "Cleaning up build artifacts..."
-	powershell -Command "cd lambdas/msai-auth-service; if (Test-Path 'dist') { Remove-Item -Recurse -Force 'dist' }"
+	powershell -Command "cd lambdas/msai-user-service; if (Test-Path 'dist') { Remove-Item -Recurse -Force 'dist' }"
 
 # Deploy to dev workspace
 deploy-dev: 
