@@ -1,6 +1,7 @@
 # S3 Bucket for MSAI Image Uploader
 resource "aws_s3_bucket" "msai_images_bucket" {
   bucket = var.bucket_name
+  force_destroy = true
 
   tags = {
     Name        = "MSAI Images Bucket"

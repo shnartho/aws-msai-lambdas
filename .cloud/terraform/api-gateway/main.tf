@@ -1,8 +1,8 @@
 data "aws_region" "current" {}
 
 resource "aws_api_gateway_rest_api" "lambda_api" {
-  name        = "${var.function_base_name}_api_${var.workspace}"
-  description = "API Gateway for ${var.function_base_name} Lambda function"
+  name        = "${var.function_name}_api_${var.workspace}"
+  description = "API Gateway for ${var.function_name} Lambda function"
 
   endpoint_configuration {
     types = ["REGIONAL"]
@@ -15,138 +15,437 @@ resource "aws_api_gateway_rest_api" "lambda_api" {
   ]
 }
 
+
+######################
+### Gateway Status ###
+######################
+
+# /status resource
+resource "aws_api_gateway_resource" "status_resource" {
+  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
+  parent_id   = aws_api_gateway_rest_api.lambda_api.root_resource_id
+  path_part   = "status"
+}
+
+# GET method for /status
+resource "aws_api_gateway_method" "status_get" {
+  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
+  resource_id   = aws_api_gateway_resource.status_resource.id
+  http_method   = "GET"
+  authorization = "NONE"
+  api_key_required = true
+}
+
+# Lambda integration for status GET
+resource "aws_api_gateway_integration" "status_get_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.lambda_api.id
+  resource_id             = aws_api_gateway_resource.status_resource.id
+  http_method             = aws_api_gateway_method.status_get.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = var.lambda_invoke_arn
+}
+
+
+####################
+### Gateway Auth ###
+####################
 resource "aws_api_gateway_resource" "lambda_resource" {
+  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
+  parent_id   = aws_api_gateway_rest_api.lambda_api.root_resource_id
+  path_part   = "auth"
+}
+## /auth/login resource
+resource "aws_api_gateway_resource" "login_resource" {
+  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
+  parent_id   = aws_api_gateway_resource.lambda_resource.id
+  path_part   = "login"
+}
+
+## /auth/signup resource
+resource "aws_api_gateway_resource" "signup_resource" {
+  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
+  parent_id   = aws_api_gateway_resource.lambda_resource.id
+  path_part   = "signup"
+}
+## POST method for /auth/login
+resource "aws_api_gateway_method" "login_post" {
+  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
+  resource_id   = aws_api_gateway_resource.login_resource.id
+  http_method   = "POST"
+  authorization = "NONE"
+  api_key_required = true
+}
+## POST method for /auth/signup
+resource "aws_api_gateway_method" "signup_post" {
+  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
+  resource_id   = aws_api_gateway_resource.signup_resource.id
+  http_method   = "POST"
+  authorization = "NONE"
+  api_key_required = true
+}
+## Lambda integration for /auth/login POST
+resource "aws_api_gateway_integration" "login_post_integration" {
+  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
+  resource_id = aws_api_gateway_resource.login_resource.id
+  http_method = aws_api_gateway_method.login_post.http_method
+  integration_http_method = "POST"
+  type = "AWS_PROXY"
+  uri = var.lambda_invoke_arn
+}
+## Lambda integration for /auth/signup POST
+resource "aws_api_gateway_integration" "signup_post_integration" {
+  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
+  resource_id = aws_api_gateway_resource.signup_resource.id
+  http_method = aws_api_gateway_method.signup_post.http_method
+  integration_http_method = "POST"
+  type = "AWS_PROXY"
+  uri = var.lambda_invoke_arn
+}
+
+
+
+####################
+### Gateway User ###
+####################
+
+resource "aws_api_gateway_resource" "user_resource" {
+  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
+  parent_id   = aws_api_gateway_rest_api.lambda_api.root_resource_id
+  path_part   = "user"
+}
+
+# /user/balance resource
+resource "aws_api_gateway_resource" "user_balance_resource" {
+  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
+  parent_id   = aws_api_gateway_resource.user_resource.id
+  path_part   = "balance"
+}
+
+# /user/profile resource
+resource "aws_api_gateway_resource" "user_profile_resource" {
+  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
+  parent_id   = aws_api_gateway_resource.user_resource.id
+  path_part   = "profile"
+}
+
+# PATCH method for /user/balance
+resource "aws_api_gateway_method" "user_balance_patch" {
+  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
+  resource_id   = aws_api_gateway_resource.user_balance_resource.id
+  http_method   = "PATCH"
+  authorization = "NONE"
+  api_key_required = true
+}
+
+# GET method for /user/profile
+resource "aws_api_gateway_method" "user_profile_get" {
+  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
+  resource_id   = aws_api_gateway_resource.user_profile_resource.id
+  http_method   = "GET"
+  authorization = "NONE"
+  api_key_required = true
+}
+
+# Lambda integration for /user/balance PATCH
+resource "aws_api_gateway_integration" "user_balance_patch_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.lambda_api.id
+  resource_id             = aws_api_gateway_resource.user_balance_resource.id
+  http_method             = aws_api_gateway_method.user_balance_patch.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = var.lambda_invoke_arn
+}
+
+# Lambda integration for /user/profile GET
+resource "aws_api_gateway_integration" "user_profile_get_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.lambda_api.id
+  resource_id             = aws_api_gateway_resource.user_profile_resource.id
+  http_method             = aws_api_gateway_method.user_profile_get.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = var.lambda_invoke_arn
+}
+
+
+######################
+#### Gateway Ads #####
+######################
+
+# /ads resource
+resource "aws_api_gateway_resource" "ads_resource" {
+  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
+  parent_id   = aws_api_gateway_rest_api.lambda_api.root_resource_id
+  path_part   = "ads"
+}
+
+# GET method for /ads
+resource "aws_api_gateway_method" "ads_get" {
+  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
+  resource_id   = aws_api_gateway_resource.ads_resource.id
+  http_method   = "GET"
+  authorization = "NONE"
+  api_key_required = true
+}
+
+# POST method for /ads
+resource "aws_api_gateway_method" "ads_post" {
+  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
+  resource_id   = aws_api_gateway_resource.ads_resource.id
+  http_method   = "POST"
+  authorization = "NONE"
+  api_key_required = true
+}
+
+# PATCH method for /ads
+resource "aws_api_gateway_method" "ads_patch" {
+  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
+  resource_id   = aws_api_gateway_resource.ads_resource.id
+  http_method   = "PATCH"
+  authorization = "NONE"
+  api_key_required = true
+}
+
+# DELETE method for /ads
+resource "aws_api_gateway_method" "ads_delete" {
+  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
+  resource_id   = aws_api_gateway_resource.ads_resource.id
+  http_method   = "DELETE"
+  authorization = "NONE"
+  api_key_required = true
+}
+
+# Lambda integration for /ads GET
+resource "aws_api_gateway_integration" "ads_get_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.lambda_api.id
+  resource_id             = aws_api_gateway_resource.ads_resource.id
+  http_method             = aws_api_gateway_method.ads_get.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = var.lambda_invoke_arn
+}
+
+# Lambda integration for /ads POST
+resource "aws_api_gateway_integration" "ads_post_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.lambda_api.id
+  resource_id             = aws_api_gateway_resource.ads_resource.id
+  http_method             = aws_api_gateway_method.ads_post.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = var.lambda_invoke_arn
+}
+
+# Lambda integration for /ads PATCH
+resource "aws_api_gateway_integration" "ads_patch_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.lambda_api.id
+  resource_id             = aws_api_gateway_resource.ads_resource.id
+  http_method             = aws_api_gateway_method.ads_patch.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = var.lambda_invoke_arn
+}
+
+# Lambda integration for /ads DELETE
+resource "aws_api_gateway_integration" "ads_delete_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.lambda_api.id
+  resource_id             = aws_api_gateway_resource.ads_resource.id
+  http_method             = aws_api_gateway_method.ads_delete.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = var.lambda_invoke_arn
+}
+
+
+######################
+### Gateway Images ###
+######################
+
+resource "aws_api_gateway_resource" "images_resource" {
   rest_api_id = aws_api_gateway_rest_api.lambda_api.id
   parent_id   = aws_api_gateway_rest_api.lambda_api.root_resource_id
   path_part   = "images"
 }
 
-resource "aws_api_gateway_method" "lambda_method_get" {
+// images/status resource
+resource "aws_api_gateway_resource" "images_status_resource" {
+  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
+  parent_id   = aws_api_gateway_resource.images_resource.id
+  path_part   = "status"
+}
+
+# GET method for /images/status
+resource "aws_api_gateway_method" "images_status_get" {
+  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
+  resource_id   = aws_api_gateway_resource.images_status_resource.id
+  http_method   = "GET"
+  authorization = "NONE"
+  api_key_required = true
+}
+
+
+resource "aws_api_gateway_method" "images_get" {
   rest_api_id      = aws_api_gateway_rest_api.lambda_api.id
-  resource_id      = aws_api_gateway_resource.lambda_resource.id
+  resource_id      = aws_api_gateway_resource.images_resource.id
   http_method      = "GET"
   authorization    = "NONE"
   api_key_required = true
 }
 
-resource "aws_api_gateway_method" "lambda_method_post" {
-  rest_api_id      = aws_api_gateway_rest_api.lambda_api.id
-  resource_id      = aws_api_gateway_resource.lambda_resource.id
-  http_method      = "POST"
-  authorization    = "NONE"
-  api_key_required = true
-}
 
-resource "aws_api_gateway_method" "lambda_method_delete" {
-  rest_api_id      = aws_api_gateway_rest_api.lambda_api.id
-  resource_id      = aws_api_gateway_resource.lambda_resource.id
-  http_method      = "DELETE"
-  authorization    = "NONE"
-  api_key_required = true
-}
-
-resource "aws_api_gateway_method" "lambda_method_put" {
-  rest_api_id      = aws_api_gateway_rest_api.lambda_api.id
-  resource_id      = aws_api_gateway_resource.lambda_resource.id
-  http_method      = "PUT"
-  authorization    = "NONE"
-  api_key_required = true
-}
-
-resource "aws_api_gateway_integration" "lambda_integration_get" {
+resource "aws_api_gateway_integration" "images_status_get_integration" {
   rest_api_id             = aws_api_gateway_rest_api.lambda_api.id
-  resource_id             = aws_api_gateway_resource.lambda_resource.id
-  http_method             = aws_api_gateway_method.lambda_method_get.http_method
+  resource_id             = aws_api_gateway_resource.images_status_resource.id
+  http_method             = aws_api_gateway_method.images_status_get.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = var.lambda_invoke_arn
+  uri                     = var.lambda_image_invoke_arn
 }
 
-resource "aws_api_gateway_integration" "lambda_integration_post" {
+resource "aws_api_gateway_integration" "images_get_integration" {
   rest_api_id             = aws_api_gateway_rest_api.lambda_api.id
-  resource_id             = aws_api_gateway_resource.lambda_resource.id
-  http_method             = aws_api_gateway_method.lambda_method_post.http_method
+  resource_id             = aws_api_gateway_resource.images_resource.id
+  http_method             = aws_api_gateway_method.images_get.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = var.lambda_invoke_arn
+  uri                     = var.lambda_image_invoke_arn
 }
 
-resource "aws_api_gateway_integration" "lambda_integration_delete" {
-  rest_api_id             = aws_api_gateway_rest_api.lambda_api.id
-  resource_id             = aws_api_gateway_resource.lambda_resource.id
-  http_method             = aws_api_gateway_method.lambda_method_delete.http_method
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = var.lambda_invoke_arn
-}
-
-resource "aws_api_gateway_integration" "lambda_integration_put" {
-  rest_api_id             = aws_api_gateway_rest_api.lambda_api.id
-  resource_id             = aws_api_gateway_resource.lambda_resource.id
-  http_method             = aws_api_gateway_method.lambda_method_put.http_method
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = var.lambda_invoke_arn
-}
-
-resource "aws_api_gateway_deployment" "lambda_deployment" {
-  depends_on = [
-    aws_api_gateway_method.lambda_method_get,
-    aws_api_gateway_method.lambda_method_post,
-    aws_api_gateway_method.lambda_method_delete,
-    aws_api_gateway_method.lambda_method_put,
-    aws_api_gateway_integration.lambda_integration_get,
-    aws_api_gateway_integration.lambda_integration_post,
-    aws_api_gateway_integration.lambda_integration_delete,
-    aws_api_gateway_integration.lambda_integration_put,
-  ]
-
+resource "aws_api_gateway_resource" "images_user_resource" {
   rest_api_id = aws_api_gateway_rest_api.lambda_api.id
-
-  triggers = {
-    redeployment = sha1(jsonencode([
-      aws_api_gateway_resource.lambda_resource.id,
-      aws_api_gateway_method.lambda_method_get.id,
-      aws_api_gateway_method.lambda_method_post.id,
-      aws_api_gateway_method.lambda_method_delete.id,
-      aws_api_gateway_method.lambda_method_put.id,
-      aws_api_gateway_integration.lambda_integration_get.id,
-      aws_api_gateway_integration.lambda_integration_post.id,
-      aws_api_gateway_integration.lambda_integration_delete.id,
-      aws_api_gateway_integration.lambda_integration_put.id,
-    ]))
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
+  parent_id   = aws_api_gateway_resource.images_resource.id
+  path_part   = "user"
 }
 
-resource "aws_api_gateway_stage" "lambda_stage" {
-  deployment_id = aws_api_gateway_deployment.lambda_deployment.id
+# GET method for /images/user
+resource "aws_api_gateway_method" "images_user_get" {
   rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
-  stage_name    = var.workspace
+  resource_id   = aws_api_gateway_resource.images_user_resource.id
+  http_method   = "GET"
+  authorization = "NONE"
+  api_key_required = true
 }
 
-resource "aws_lambda_permission" "api_gateway_invoke" {
-  statement_id  = "AllowExecutionFromAPIGateway"
+# PUT method for /images/user
+resource "aws_api_gateway_method" "images_user_put" {
+  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
+  resource_id   = aws_api_gateway_resource.images_user_resource.id
+  http_method   = "PUT"
+  authorization = "NONE"
+  api_key_required = true
+}
+
+# DELETE method for /images/user
+resource "aws_api_gateway_method" "images_user_delete" {
+  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
+  resource_id   = aws_api_gateway_resource.images_user_resource.id
+  http_method   = "DELETE"
+  authorization = "NONE"
+  api_key_required = true
+}
+
+# Integrations for /images/user
+resource "aws_api_gateway_integration" "images_user_get_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.lambda_api.id
+  resource_id             = aws_api_gateway_resource.images_user_resource.id
+  http_method             = aws_api_gateway_method.images_user_get.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = var.lambda_image_invoke_arn
+}
+
+resource "aws_api_gateway_integration" "images_user_put_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.lambda_api.id
+  resource_id             = aws_api_gateway_resource.images_user_resource.id
+  http_method             = aws_api_gateway_method.images_user_put.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = var.lambda_image_invoke_arn
+}
+
+resource "aws_api_gateway_integration" "images_user_delete_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.lambda_api.id
+  resource_id             = aws_api_gateway_resource.images_user_resource.id
+  http_method             = aws_api_gateway_method.images_user_delete.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = var.lambda_image_invoke_arn
+}
+
+resource "null_resource" "set_binary_media_types" {
+  triggers = {
+    always_run = timestamp()
+  }
+}
+
+
+##########################
+### Gateway Deployment ###
+##########################
+
+# Lambda permission for API Gateway to invoke user Lambda
+resource "aws_lambda_permission" "apigw_user_invoke" {
+  statement_id  = "AllowAPIGatewayInvokeUser"
   action        = "lambda:InvokeFunction"
   function_name = var.lambda_function_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api.lambda_api.execution_arn}/*/*"
 }
 
-resource "aws_api_gateway_api_key" "client_key" {
-  name    = "client-key"
-  enabled = true
+# Lambda permission for API Gateway to invoke image Lambda
+resource "aws_lambda_permission" "apigw_image_invoke" {
+  statement_id  = "AllowAPIGatewayInvokeImage"
+  action        = "lambda:InvokeFunction"
+  function_name = var.lambda_image_function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.lambda_api.execution_arn}/*/*"
 }
 
+# API Gateway deployment
+resource "aws_api_gateway_deployment" "lambda_api_deployment" {
+  depends_on = [
+    aws_api_gateway_integration.login_post_integration,
+    aws_api_gateway_integration.signup_post_integration,
+    aws_api_gateway_integration.status_get_integration,
+    aws_api_gateway_integration.user_balance_patch_integration,
+    aws_api_gateway_integration.user_profile_get_integration,
+    aws_api_gateway_integration.ads_get_integration,
+    aws_api_gateway_integration.ads_post_integration,
+    aws_api_gateway_integration.ads_patch_integration,
+    aws_api_gateway_integration.ads_delete_integration,
+    aws_api_gateway_integration.images_status_get_integration,
+    aws_api_gateway_integration.images_get_integration,
+    aws_api_gateway_integration.images_user_get_integration,
+    aws_api_gateway_integration.images_user_put_integration,
+    aws_api_gateway_integration.images_user_delete_integration
+  ]
+  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
+}
+
+resource "aws_api_gateway_stage" "lambda_api_stage" {
+  stage_name    = var.workspace
+  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
+  deployment_id = aws_api_gateway_deployment.lambda_api_deployment.id
+}
+
+
+##############################
+### API Gateway Usage Plan ###
+##############################
+
+# resource "aws_api_gateway_api_key" "gw_client_key" {
+resource "aws_api_gateway_api_key" "gw_client_key" {
+  name    = "gw-client-key"
+  enabled = true
+}
+# }
+
+# resource "aws_api_gateway_usage_plan" "usage_limit" {
 resource "aws_api_gateway_usage_plan" "usage_limit" {
   name = "global-limit"
 
   api_stages {
     api_id = aws_api_gateway_rest_api.lambda_api.id
-    stage  = aws_api_gateway_stage.lambda_stage.stage_name
+    stage  = aws_api_gateway_stage.lambda_api_stage.stage_name
   }
 
   throttle_settings {
@@ -160,8 +459,9 @@ resource "aws_api_gateway_usage_plan" "usage_limit" {
   }
 }
 
-resource "aws_api_gateway_usage_plan_key" "usage_key_binding" {
-  key_id        = aws_api_gateway_api_key.client_key.id
+# resource "aws_api_gateway_usage_plan_key" "images_usage_key_binding" {
+resource "aws_api_gateway_usage_plan_key" "images_usage_key_binding" {
+  key_id        = aws_api_gateway_api_key.gw_client_key.id
   key_type      = "API_KEY"
   usage_plan_id = aws_api_gateway_usage_plan.usage_limit.id
 }

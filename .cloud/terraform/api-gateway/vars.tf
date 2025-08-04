@@ -1,10 +1,20 @@
-variable "function_base_name" {
-  description = "Base name for the function"
+variable "lambda_image_function_name" {
+  description = "Name of the Lambda function for images"
+  type        = string
+}
+
+variable "lambda_image_invoke_arn" {
+  description = "Invoke ARN of the Lambda function for images"
+  type        = string
+}
+
+variable "function_name" {
+  description = "Name of the Lambda function (e.g., msai-user-service)"
   type        = string
 }
 
 variable "workspace" {
-  description = "The workspace environment (dev, prod, etc.)"
+  description = "Workspace/environment name (e.g., dev, prod)"
   type        = string
 }
 

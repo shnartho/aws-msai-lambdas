@@ -1,13 +1,13 @@
 # Build the Lambda function package
 build:
 	@echo "Building Lambda function package..."
-	powershell -Command "cd lambdas/msai-image-uploader; if (Test-Path 'dist') { Remove-Item -Recurse -Force 'dist' }; New-Item -ItemType Directory -Name 'dist'"
-	powershell -Command "cd lambdas/msai-image-uploader; pip install -r requirements.txt -t dist/ --upgrade --platform linux_x86_64 --only-binary=:all:"
-	powershell -Command "cd lambdas/msai-image-uploader; Copy-Item -Path main.py, config.py -Destination dist/"
-	powershell -Command "cd lambdas/msai-image-uploader; Copy-Item -Path application -Destination dist/ -Recurse -Force"
-	powershell -Command "cd lambdas/msai-image-uploader; Copy-Item -Path domain -Destination dist/ -Recurse -Force"
-	powershell -Command "cd lambdas/msai-image-uploader; Copy-Item -Path repository -Destination dist/ -Recurse -Force"
-	cd lambdas/msai-image-uploader/dist && zip -r ../../../.cloud/terraform/releases/msai-image-uploader.zip .
+	powershell -Command "cd lambdas/msai-image-service; if (Test-Path 'dist') { Remove-Item -Recurse -Force 'dist' }; New-Item -ItemType Directory -Name 'dist'"
+	powershell -Command "cd lambdas/msai-image-service; pip install -r requirements.txt -t dist/ --upgrade --platform linux_x86_64 --only-binary=:all:"
+	powershell -Command "cd lambdas/msai-image-service; Copy-Item -Path main.py, config.py -Destination dist/"
+	powershell -Command "cd lambdas/msai-image-service; Copy-Item -Path application -Destination dist/ -Recurse -Force"
+	powershell -Command "cd lambdas/msai-image-service; Copy-Item -Path domain -Destination dist/ -Recurse -Force"
+	powershell -Command "cd lambdas/msai-image-service; Copy-Item -Path repository -Destination dist/ -Recurse -Force"
+	cd lambdas/msai-image-service/dist && zip -r ../../../.cloud/terraform/releases/msai-image-service.zip .
 
 build-user:
 	@echo "Building msai-user-service Lambda function package..."
@@ -53,7 +53,7 @@ init:
 # Clean build artifacts
 clean:
 	@echo "Cleaning build artifacts..."
-	powershell -Command "if (Test-Path '.cloud/terraform/release/msai-image-uploader.zip') { Remove-Item '.cloud/terraform/release/msai-image-uploader.zip' }"
+	powershell -Command "if (Test-Path '.cloud/terraform/release/msai-image-service.zip') { Remove-Item '.cloud/terraform/release/msai-image-service.zip' }"
 
 # Commit and push with message
 push:

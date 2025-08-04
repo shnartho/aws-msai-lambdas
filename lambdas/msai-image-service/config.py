@@ -4,7 +4,7 @@ import os
 class Config:
     """Configuration class for the image uploader service"""
 
-    JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'secret_key')
+    JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'secret')
     S3_BUCKET_NAME = os.environ.get('S3_BUCKET_NAME', 'msai-images-bucket')
     ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'tiff']
     MAX_FILE_SIZE = int(os.environ.get('MAX_FILE_SIZE', 10 * 1024 * 1024))

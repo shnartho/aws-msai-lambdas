@@ -1,31 +1,15 @@
-###########################
-### Image Service Module ###
-###########################
-module "lambda" {
-  source        = "./lambda"
-  workspace     = var.workspace
-  function_name = "${var.function_base_name}_${var.workspace}"
-  filename      = "releases/msai-image-uploader.zip"
-  handler       = "main.lambda_handler"
-  runtime       = "python3.11"
-  timeout       = 60
-  s3_bucket_name = "msai-images-bucket"
-}
+####################################
+#######  API Gateway Module ########
+####################################
 
 module "api_gateway" {
   source               = "./api-gateway"
-  function_base_name   = var.function_base_name
+  function_name        = var.function_name_user_service
   workspace            = var.workspace
-  lambda_function_name = module.lambda.function_name
-  lambda_invoke_arn    = module.lambda.invoke_arn
-}
-
-module "s3" {
-  source       = "./s3"
-  bucket_name  = "msai-images-bucket"
-  environment  = var.workspace
-  cors_origins = var.cors_origins
-  aws_region   = var.aws_region
+  lambda_function_name = module.lambda_user.function_name
+  lambda_invoke_arn    = module.lambda_user.invoke_arn
+  lambda_image_function_name = module.lambda.function_name
+  lambda_image_invoke_arn    = module.lambda.invoke_arn
 }
 
 ####################################
@@ -44,15 +28,6 @@ module "lambda_user" {
   dynamodb_ads_table_arn  = module.dynamodb_ads.table_arn
 }
 
-
-module "api_gateway_user" {
-  source               = "./api-gateway-user"
-  function_name        = var.function_name_user_service
-  workspace            = var.workspace
-  lambda_function_name = module.lambda_user.function_name
-  lambda_invoke_arn    = module.lambda_user.invoke_arn
-}
-
 module "dynamodb_user" {
   source = "./dynamodb-user"
 }
@@ -60,3 +35,26 @@ module "dynamodb_user" {
 module "dynamodb_ads" {
   source = "./dynamodb-ads"
 }
+
+############################
+### Image Service Module ###
+############################
+module "lambda" {
+  source        = "./lambda"
+  workspace     = var.workspace
+  function_name = "${var.function_base_name}_${var.workspace}"
+  filename      = "releases/msai-image-service.zip"
+  handler       = "main.lambda_handler"
+  runtime       = "python3.11"
+  timeout       = 60
+  s3_bucket_name = "msai-images-bucket"
+}
+
+module "s3" {
+  source       = "./s3"
+  bucket_name  = "msai-images-bucket"
+  environment  = var.workspace
+  cors_origins = var.cors_origins
+  aws_region   = var.aws_region
+}
+

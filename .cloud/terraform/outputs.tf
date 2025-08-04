@@ -18,15 +18,15 @@ output "workspace" {
   value       = var.workspace
 }
 
-output "api_gateway_url" {
-  description = "URL of the API Gateway endpoint"
-  value       = module.api_gateway.api_gateway_url
-}
+# output "api_gateway_url" {
+#   description = "URL of the API Gateway endpoint"
+#   value       = module.api_gateway.api_gateway_url
+# }
 
-output "api_gateway_base_url" {
-  description = "Base URL of the API Gateway"
-  value       = module.api_gateway.api_gateway_base_url
-}
+# output "api_gateway_base_url" {
+#   description = "Base URL of the API Gateway"
+#   value       = module.api_gateway.api_gateway_base_url
+# }
 
 output "dynamodb_user_table_name" {
   value = module.dynamodb_user.table_name
